@@ -1,0 +1,111 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <map>
+
+using namespace std;
+
+// Structure to store user information
+struct User {
+    string username;
+    string password;
+};
+
+// Function to register a new user
+void registerUser() {
+    User user;
+    cout << "Enter a username: ";
+    cin >> user.username;
+    cout << "Enter a password: ";
+    cin >> user.password;
+
+    // Save user data to file
+    ofstream file("users.txt", ios::app);
+    file << user.username << " " << user.password << endl;
+    file.close();
+
+    cout << "Registration successful!\n";
+}
+
+// Function to login an existing user
+bool loginUser() {
+    User user;
+    cout << "Enter username: ";
+    cin >> user.username;
+    cout << "Enter password: ";
+    cin >> user.password;
+
+    ifstream file("users.txt");
+    string username, password;
+    while (file >> username >> password) {
+        if (username == user.username && password == user.password) {
+            cout << "Login successful!\n";
+            return true;
+        }
+    }
+    cout << "Invalid username or password.\n";
+    return false;
+}
+
+// Function to conduct the quiz
+void startQuiz() {
+    map<string, string> questions = {
+        {"What is the capital of France?", "Paris"},
+        {"What is 5 + 7?", "12"},
+        {"Who wrote 'To Kill a Mockingbird'?", "Harper Lee"},
+        {"What is the chemical symbol for water?", "H2O"},
+        {"What planet is known as the Red Planet?", "Mars"}
+    };
+
+    string answer;
+    int score = 0;
+    vector<string> correctAnswers;
+
+    cout << "\nStarting Quiz...\n";
+    for (auto& q : questions) {
+        cout << q.first << endl;
+        cout << "Your answer: ";
+        cin >> answer;
+
+        if (answer == q.second) {
+            cout << "Correct!\n";
+            score++;
+        } else {
+            cout << "Incorrect. The correct answer is " << q.second << ".\n";
+        }
+        correctAnswers.push_back(q.second);
+    }
+
+    // Display results
+    cout << "\nQuiz finished!\n";
+    cout << "Your score: " << score << "/" << questions.size() << "\n";
+    cout << "Correct answers:\n";
+    for (const auto& ans : correctAnswers) {
+        cout << "- " << ans << "\n";
+    }
+}
+
+int main() {
+    int choice;
+
+    cout << "Welcome to the Quiz Game!\n";
+    cout << "1. Register\n2. Login\n";
+    cin >> choice;
+
+    bool loggedIn = false;
+    if (choice == 1) {
+        registerUser();
+        loggedIn = loginUser();
+    } else if (choice == 2) {
+        loggedIn = loginUser();
+    } else {
+        cout << "Invalid choice.\n";
+    }
+
+    if (loggedIn) {
+        startQuiz();
+    }
+
+    return 0;
+}
